@@ -35,24 +35,21 @@ fio-helm-repo/
 
 ## 🌍 Public / connected cluster usage
 
-### 1. 🛠️ To start using the Makefile wget it:
-```
-wget http://lovemetrue.github.io/fio-helm-repo/makefile
-```
+### 1. 🛠️ To start wget sh script ->:
 
-### And run by typing this command:
+1. Download
 ```
-make
+wget wget http://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-jobs.sh
 ```
-What it does:
-	1.	Adds the Helm repository (https://lovemetrue.github.io/fio-helm-repo)
-	2.	Updates the Helm repo index
-	3.	Downloads the deploy-fio-jobs.sh script
-	4.	Makes it executable
-	5.	Runs it
+2. ## Change the mode
+```
+chmod -x deploy-fio-jobs.sh
+```
+3. ### And run by typing this command:
 
-If you have make, you can automate installation and execution of fio-chart across all nodes using:
-## 🛡️ Private / Air-gapped cluster usage
+```bash
+./deploy-fio-jobs.sh
+```
 
 ### 1. Download chart manually (from a connected machine)
 
