@@ -21,13 +21,7 @@ spec:
           imagePullPolicy: {{ .Values.global.image.pullPolicy }}
           command: ["/bin/sh", "-c"]
           args:
-            - |
-              echo "[INFO] Start fio on $(hostname)" && \
-              mkdir -p /tmp/fio-data && \
-              fio --rw=write --ioengine=sync --fdatasync=1 \
-                  --directory=/tmp/fio-data --size=100m --bs=2300 --name=mytest && \
-              echo "[INFO] FIO done on $(hostname)" && \
-              sleep 300  # give us time to collect logs
+            - "/entrypoint.sh"
           volumeMounts:
             - name: tmp-dir
               mountPath: /tmp
