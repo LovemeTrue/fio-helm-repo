@@ -5,7 +5,6 @@ set -e
 RELEASE_NAME="fio-daemon"
 CHART_NAME="fio-chart"
 CHART_REPO="fio"
-CHART_VERSION="0.2.0"
 NAMESPACE="default"
 LOG_DIR="fio-results/daemon-logs"
 
@@ -13,7 +12,6 @@ mkdir -p "$LOG_DIR"
 
 echo "[INFO] Installing/upgrading DaemonSet..."
 helm upgrade --install "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
-  --version "$CHART_VERSION" \
   --namespace "$NAMESPACE" \
   --create-namespace
 
