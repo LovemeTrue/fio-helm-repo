@@ -13,11 +13,3 @@ global:
   fioArgs: >-
     --rw=write --ioengine=sync --fdatasync=1
     --directory=test-data --size=100m --bs=2300 --name=mytest
-
-  nodeSelector:
-    node-role.kubernetes.io/master: ""
-  tolerations:
-    - key: "node-role.kubernetes.io/master"
-      operator: "Exists"
-      effect: "NoSchedule"
-  ttlSecondsAfterFinished: 180

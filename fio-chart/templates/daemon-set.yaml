@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "fio-chart.fullname" . }}
+  labels:
+    {{- include "fio-chart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "fio-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "fio-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      tolerations:
+        - operator: "Exists"  # Запуск на всех нодах, включая мастер
+      containers:
+        - name: fio-container
+          image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              # Генерация уникального имени файла
+              OUTPUT_FILE="/results/fio-results-$(date +\%Y\%m\%d-\%H\%M\%S).json"
+              
+              # Запуск теста
+              fio {{ .Values.global.fioArgs }} --output=$OUTPUT_FILE
+              
+              # Ожидание для сбора результатов
+              sleep 300
+          volumeMounts:
+            - name: results-volume
+              mountPath: /results
+          resources:
+            {{ toYaml .Values.global.resources | nindent 12 }}
+      volumes:
+        - name: results-volume
+          hostPath:
+            path: /root/fio-results
+            type: DirectoryOrCreate
+      restartPolicy: Never  # Завершение после выполнения
