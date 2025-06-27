@@ -3,12 +3,12 @@ entries:
   fio-chart:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2025-06-27T14:53:17.398037+03:00"
+    created: "2025-06-27T15:00:18.758704+03:00"
     description: FIO disk benchmark job for Kubernetes
-    digest: 3cb111e18851fc816cded0ae7656eeffb490443a07926ea075aecb2096e19b59
+    digest: 582784e3446c5ef25931317b5513ec7bf807261116eec0342b83056dc0db5aa4
     name: fio-chart
     type: application
     urls:
     - https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz
     version: 0.1.0
-generated: "2025-06-27T14:53:17.397594+03:00"
+generated: "2025-06-27T15:00:18.757807+03:00"
