@@ -49,28 +49,44 @@ for node in $nodes; do
   fi
 
   # Wait for Job to be created
+  echo "[INFO] Waiting for Job to be created..."
   job_name=""
   for i in {1..30}; do
     job_name=$(kubectl get jobs -n "$NAMESPACE" -l app=fio-job \
-      -o jsonpath="{range .items[?(@.metadata.labels.helm\\.sh/release=='$release')]}{.metadata.name}{'\n'}{end}")
+      -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep "$release" || true)
     [[ -n "$job_name" ]] && break
     sleep 2
   done
 
-  [[ -z "$job_name" ]] && echo "[ERROR] No job found for release $release" && continue
+  if [[ -z "$job_name" ]]; then
+    echo "[ERROR] Job for release $release not found"
+    continue
+  fi
 
-  # Wait for job to complete
+  echo "[INFO] Job found: $job_name"
+  echo "[INFO] Waiting for job completion (180s max)..."
   if ! kubectl wait --for=condition=complete --timeout=180s job/"$job_name" -n "$NAMESPACE"; then
     echo "[ERROR] Job $job_name did not complete in time"
     continue
   fi
 
-  # Get logs
+  echo "[INFO] Job completed. Retrieving logs..."
   pod_name=$(kubectl get pods -n "$NAMESPACE" -l job-name="$job_name" \
     -o jsonpath="{.items[0].metadata.name}")
-  echo "[INFO] Saving logs for node $node to $log_file"
-  kubectl logs "$pod_name" -n "$NAMESPACE" | tee "$log_file"
+
+  if [[ -z "$pod_name" ]]; then
+    echo "[ERROR] Pod for job $job_name not found"
+    continue
+  fi
+
+  echo "[INFO] Saving logs to $log_file"
+  if ! kubectl logs "$pod_name" -n "$NAMESPACE" > "$log_file"; then
+    echo "[WARN] Failed to get logs from pod $pod_name"
+    continue
+  fi
+
+  echo "[INFO] Log saved: $log_file"
 
 done
 
-echo "✅ All done. Logs saved in fio-results/"
+echo "✅ All jobs processed. Logs are in fio-results/"
