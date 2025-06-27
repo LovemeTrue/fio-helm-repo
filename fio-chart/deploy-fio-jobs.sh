@@ -51,10 +51,13 @@ for node in $nodes; do
   # Wait for Job to be created
   echo "[INFO] Waiting for Job to be created..."
   job_name=""
-  for i in {1..30}; do
+  for i in {1..20}; do
     job_name=$(kubectl get jobs -n "$NAMESPACE" -l app=fio-job \
-      -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep "$release" || true)
-    [[ -n "$job_name" ]] && break
+      -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep "$release" | tail -n1 || true)
+    if [[ -n "$job_name" ]]; then
+      echo "[INFO] Found job: $job_name"
+      break
+    fi
     sleep 2
   done
 
