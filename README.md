@@ -35,19 +35,18 @@ fio-helm-repo/
 
 ## 🌍 Public / connected cluster usage
 
-### 1. Add the public Helm repository
-
-```bash
-helm repo add fio https://lovemetrue.github.io/fio-helm-repo
-helm repo update
+### 1. 🛠️ Using the Makefile
 ```
-### 2. Run the deployment script
-
-```bash
-chmod +x deploy-fio-jobs.sh
-./deploy-fio-jobs.sh
+make
 ```
-
+What it does:
+	1.	Adds the Helm repository (https://lovemetrue.github.io/fio-helm-repo)
+	2.	Updates the Helm repo index
+	3.	Downloads the deploy-fio-jobs.sh script
+	4.	Makes it executable
+	5.	Runs it
+  
+If you have make, you can automate installation and execution of fio-chart across all nodes using:
 ## 🛡️ Private / Air-gapped cluster usage
 
 ### 1. Download chart manually (from a connected machine)
