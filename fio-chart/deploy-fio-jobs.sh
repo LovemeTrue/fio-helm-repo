@@ -36,5 +36,5 @@ for node in $nodes; do
   kubectl logs "$pod" -n "$NAMESPACE" > "$log_file"
   sleep 5
 done
-
+helm delete "$RELEASE_NAME"
 echo "✅ Done. Logs are in $LOG_DIR/"
