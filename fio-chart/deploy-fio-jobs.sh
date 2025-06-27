@@ -5,10 +5,17 @@ set -e
 RELEASE_NAME="fio-daemon"
 CHART_NAME="fio-chart"
 CHART_REPO="fio"
+REPO_URL="https://lovemetrue.github.io/fio-helm-repo"
 NAMESPACE="default"
 LOG_DIR="fio-results/daemon-logs"
 
 mkdir -p "$LOG_DIR"
+
+echo "[INFO] Adding Helm repository..."
+helm repo add "$CHART_REPO" "$REPO_URL"
+sleep 2
+helm repo update
+sleep 2
 
 echo "[INFO] Installing/upgrading DaemonSet..."
 helm upgrade --install "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
@@ -38,6 +45,7 @@ for node in $nodes; do
 done
 echo "[INFO] Deleting chart and release"
 helm repo remove fio
+sleep 2
 helm delete "$RELEASE_NAME"
 sleep 2
 echo "✅ Done. Logs are in $LOG_DIR/"
