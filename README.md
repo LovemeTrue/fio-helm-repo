@@ -43,7 +43,7 @@ wget wget http://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-jobs.sh
 ```
 2. ## Change the mode
 ```
-chmod -x deploy-fio-jobs.sh
+chmod -R 777 deploy-fio-jobs.sh
 ```
 3. ### And run by typing this command:
 
