@@ -1,62 +1,41 @@
 #!/bin/bash
+
 set -e
 
+RELEASE_NAME="fio-daemon"
 CHART_NAME="fio-chart"
 CHART_REPO="fio"
-RELEASE_NAME="fio-daemonset"
+CHART_VERSION="0.2.0"
 NAMESPACE="default"
-OUTPUT_DIR="fio-results/multi-node-disk-analyzes"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+LOG_DIR="fio-results/daemon-logs"
 
-# Создаем директории для результатов
-mkdir -p "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR/json"
+mkdir -p "$LOG_DIR"
 
-echo "[INFO] Starting disk analysis at $TIMESTAMP"
+echo "[INFO] Installing/upgrading DaemonSet..."
+helm upgrade --install "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
+  --version "$CHART_VERSION" \
+  --namespace "$NAMESPACE" \
+  --create-namespace
 
-# Установка/обновление Helm релиза
-if helm status "$RELEASE_NAME" -n "$NAMESPACE" &>/dev/null; then
-  echo "[INFO] Upgrading Helm release..."
-  helm upgrade "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
-    --namespace "$NAMESPACE"
-else
-  echo "[INFO] Installing Helm release..."
-  helm install "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
-    --namespace "$NAMESPACE"
-fi
+echo "[INFO] Waiting for pods to be ready..."
+kubectl wait --for=condition=Ready pods -l app=fio-daemon -n "$NAMESPACE" --timeout=180s || true
 
-# Ожидаем запуска всех подов
-echo "[INFO] Waiting for pods to start..."
-sleep 10
-kubectl wait --for=condition=Ready --timeout=300s -n "$NAMESPACE" pod -l app.kubernetes.io/name=fio-chart
+echo "[INFO] Collecting logs..."
 
-# Собираем результаты с каждой ноды
-echo "[INFO] Collecting results from nodes..."
 nodes=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')
 
 for node in $nodes; do
-  safe_node_name=$(echo "$node" | tr -cd '[:alnum:]-_')
-  node_output_dir="$OUTPUT_DIR/json/$safe_node_name"
-  mkdir -p "$node_output_dir"
-  
-  # Получаем путь к результатам на ноде
-  node_path="/root/fio-results"
-  
-  # Копируем файлы с ноды
-  if kubectl cp "$node":$node_path/ $node_output_dir/ >/dev/null 2>&1; then
-    echo "[OK] Results copied from node: $node"
-  else
-    echo "[WARN] Failed to copy results from node: $node"
+  pod=$(kubectl get pods -n "$NAMESPACE" -l app=fio-daemon \
+    -o jsonpath="{range .items[?(@.spec.nodeName=='$node')]}{.metadata.name}{'\n'}{end}" | head -n1)
+
+  if [[ -z "$pod" ]]; then
+    echo "[WARN] No pod found on $node"
+    continue
   fi
 
-  # Собираем информацию о ноде
-  kubectl describe node "$node" > "$OUTPUT_DIR/${safe_node_name}-node-info.txt"
+  log_file="$LOG_DIR/${node}.log"
+  echo "[INFO] Saving logs from $pod → $log_file"
+  kubectl logs "$pod" -n "$NAMESPACE" > "$log_file"
 done
 
-# Очистка
-echo "[INFO] Uninstalling Helm release..."
-helm uninstall "$RELEASE_NAME" -n "$NAMESPACE"
-
-echo "✅ All done. Results saved in $OUTPUT_DIR/"
-echo "  - Node info files: $(ls $OUTPUT_DIR/*-node-info.txt | wc -l)"
-echo "  - JSON results: $(find $OUTPUT_DIR/json -type f | wc -l)"
+echo "✅ Done. Logs are in $LOG_DIR/"

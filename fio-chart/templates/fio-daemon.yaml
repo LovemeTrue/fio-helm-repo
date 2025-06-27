@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fio-daemon
+  labels:
+    app: fio-daemon
+spec:
+  selector:
+    matchLabels:
+      app: fio-daemon
+  template:
+    metadata:
+      labels:
+        app: fio-daemon
+    spec:
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: fio
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "[INFO] Start fio on $(hostname)" && \
+              mkdir -p /tmp/fio-data && \
+              fio --rw=write --ioengine=sync --fdatasync=1 \
+                  --directory=/tmp/fio-data --size=100m --bs=2300 --name=mytest && \
+              echo "[INFO] FIO done on $(hostname)" && \
+              sleep 300  # give us time to collect logs
+          volumeMounts:
+            - name: tmp-dir
+              mountPath: /tmp
+          securityContext:
+            runAsUser: 0
+      volumes:
+        - name: tmp-dir
+          emptyDir: {}

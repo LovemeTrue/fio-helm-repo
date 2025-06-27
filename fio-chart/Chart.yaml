@@ -1,6 +1,6 @@
 apiVersion: v2
 name: fio-chart
-description: FIO disk benchmark job for Kubernetes
+version: 0.2.0
+description: FIO benchmark as DaemonSet
 type: application
-version: 0.1.0
 appVersion: "1.0"
