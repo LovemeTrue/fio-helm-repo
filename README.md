@@ -35,7 +35,7 @@ fio-helm-repo/
 
 ## 🌍 Public / connected cluster usage
 
-### 1. 🛠️ To start wget sh script ->:
+### 1. 🛠️ Get started with wgetting sh script:
 
 1. Download
 ```
