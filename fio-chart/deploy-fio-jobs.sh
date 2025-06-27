@@ -2,94 +2,67 @@
 
 set -e
 
-# Define Helm chart info
-CHART_NAME="fio-chart-0.1.0.tgz"
-CHART_REPO="https://lovemetrue.github.io/fio-helm-repo/"
+CHART_NAME="fio-chart"
+CHART_REPO="fio"
 RELEASE_PREFIX="fio"
 NAMESPACE="default"
+OUTPUT_DIR="fio-results/multi-node-disk-analyzes"
 
-# Create folder for logs
-mkdir -p fio-results
+mkdir -p "$OUTPUT_DIR"
 
-# Get list of all nodes
+echo "[INFO] Getting list of nodes..."
 nodes=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')
 
-# Handle empty or single-node cluster
-count=$(echo "$nodes" | wc -l)
-if [[ $count -eq 0 ]]; then
-  echo "[ERROR] No nodes found!"
+if [[ -z "$nodes" ]]; then
+  echo "[ERROR] No nodes found"
   exit 1
 fi
-if [[ $count -eq 1 ]]; then
-  echo "[INFO] Single-node cluster detected: $nodes"
-fi
 
-# Loop over nodes
 for node in $nodes; do
   release="${RELEASE_PREFIX}-${node}"
-  log_file="fio-results/${node}.log"
+  log_file="$OUTPUT_DIR/${node}.log"
 
   echo "=============================="
-  echo "[INFO] Working on node: $node"
+  echo "[INFO] Processing node: $node"
+  echo "[INFO] Helm release: $release"
 
-  # Warn if node is tainted with NoSchedule (e.g. master)
+  # Warn if tainted
   if kubectl describe node "$node" | grep -q "NoSchedule"; then
-    echo "[WARN] Node $node is tainted with NoSchedule — may block pod scheduling"
+    echo "[WARN] Node $node is tainted (NoSchedule)"
   fi
 
-  # Install or upgrade Helm release per node
+  # Install or upgrade Helm release
   if helm status "$release" -n "$NAMESPACE" &>/dev/null; then
+    echo "[INFO] Upgrading Helm release..."
     helm upgrade "$release" "$CHART_REPO/$CHART_NAME" \
       --namespace "$NAMESPACE" \
       --set global.nodeSelector."kubernetes\\.io/hostname"="$node"
   else
+    echo "[INFO] Installing Helm release..."
     helm install "$release" "$CHART_REPO/$CHART_NAME" \
       --namespace "$NAMESPACE" \
       --set global.nodeSelector."kubernetes\\.io/hostname"="$node"
   fi
 
-  # Wait for Job to be created
-  echo "[INFO] Waiting for Job to be created..."
-  job_name=""
-  for i in {1..20}; do
-    job_name=$(kubectl get jobs -n "$NAMESPACE" -l app=fio-job \
-      -o jsonpath="{range .items[*]}{.metadata.name}{'\n'}{end}" | grep "$release" | tail -n1 || true)
-    if [[ -n "$job_name" ]]; then
-      echo "[INFO] Found job: $job_name"
-      break
-    fi
-    sleep 2
-  done
+  # Try to find related pod
+  echo "[INFO] Searching for pod (fio-*) scheduled on node $node..."
+  pod=$(kubectl get pods -n "$NAMESPACE" \
+    -l app=fio-job \
+    -o jsonpath="{range .items[?(@.spec.nodeName=='$node')]}{.metadata.name}{'\n'}{end}" \
+    | grep "^fio-" | tail -n1)
 
-  if [[ -z "$job_name" ]]; then
-    echo "[ERROR] Job for release $release not found"
+  if [[ -z "$pod" ]]; then
+    echo "[WARN] No pod found on node $node. Skipping log collection."
     continue
   fi
 
-  echo "[INFO] Job found: $job_name"
-  echo "[INFO] Waiting for job completion (180s max)..."
-  if ! kubectl wait --for=condition=complete --timeout=180s job/"$job_name" -n "$NAMESPACE"; then
-    echo "[ERROR] Job $job_name did not complete in time"
+  echo "[INFO] Found pod: $pod. Collecting logs..."
+  if ! kubectl logs "$pod" -n "$NAMESPACE" > "$log_file"; then
+    echo "[ERROR] Failed to collect logs from pod $pod"
     continue
   fi
 
-  echo "[INFO] Job completed. Retrieving logs..."
-  pod_name=$(kubectl get pods -n "$NAMESPACE" -l job-name="$job_name" \
-    -o jsonpath="{.items[0].metadata.name}")
-
-  if [[ -z "$pod_name" ]]; then
-    echo "[ERROR] Pod for job $job_name not found"
-    continue
-  fi
-
-  echo "[INFO] Saving logs to $log_file"
-  if ! kubectl logs "$pod_name" -n "$NAMESPACE" > "$log_file"; then
-    echo "[WARN] Failed to get logs from pod $pod_name"
-    continue
-  fi
-
-  echo "[INFO] Log saved: $log_file"
-
+  echo "[INFO] Logs saved to $log_file"
 done
 
-echo "✅ All jobs processed. Logs are in fio-results/"
+echo "✅ All done. Logs saved in $OUTPUT_DIR/"
