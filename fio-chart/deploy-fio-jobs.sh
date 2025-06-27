@@ -36,5 +36,8 @@ for node in $nodes; do
   kubectl logs "$pod" -n "$NAMESPACE" > "$log_file"
   sleep 5
 done
+echo "[INFO] Deleting chart and release"
+helm repo remove fio
 helm delete "$RELEASE_NAME"
+sleep 2
 echo "✅ Done. Logs are in $LOG_DIR/"
