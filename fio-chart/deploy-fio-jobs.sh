@@ -32,7 +32,9 @@ for node in $nodes; do
 
   log_file="$LOG_DIR/${node}.log"
   echo "[INFO] Saving logs from $pod → $log_file"
+  sleep 5
   kubectl logs "$pod" -n "$NAMESPACE" > "$log_file"
+  sleep 5
 done
 
 echo "✅ Done. Logs are in $LOG_DIR/"
