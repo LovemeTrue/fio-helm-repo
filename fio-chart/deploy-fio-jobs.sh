@@ -4,8 +4,7 @@ set -e
 
 # Define Helm chart info
 CHART_NAME="fio-chart"
-CHART_REPO="https://lovemetrue.github.io/fio-helm-repo/"
-CHART_VERSION="0.1.0"
+CHART_REPO="https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz/"
 RELEASE_PREFIX="fio"
 NAMESPACE="default"
 
@@ -41,12 +40,10 @@ for node in $nodes; do
   # Install or upgrade Helm release per node
   if helm status "$release" -n "$NAMESPACE" &>/dev/null; then
     helm upgrade "$release" "$CHART_REPO/$CHART_NAME" \
-      --version "$CHART_VERSION" \
       --namespace "$NAMESPACE" \
       --set global.nodeSelector."kubernetes\\.io/hostname"="$node"
   else
     helm install "$release" "$CHART_REPO/$CHART_NAME" \
-      --version "$CHART_VERSION" \
       --namespace "$NAMESPACE" \
       --set global.nodeSelector."kubernetes\\.io/hostname"="$node"
   fi
