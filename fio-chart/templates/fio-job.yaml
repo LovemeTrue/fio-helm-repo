@@ -2,17 +2,17 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: fio-job-{{ randAlphaNum 5 | lower }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
-    app: fio-chart
+    app: fio-chart  
 spec:
   ttlSecondsAfterFinished: {{ .Values.global.ttlSecondsAfterFinished }}
   template:
     metadata:
       labels:
         app: fio-job
-    annotations:
-      "helm.sh/hook": post-install,post-upgrade
-      "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     spec:
       restartPolicy: Never
       nodeSelector:
