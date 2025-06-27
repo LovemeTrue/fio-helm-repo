@@ -1,0 +1,23 @@
+global:
+  image:
+    repository: jesusislord/fio-for-life
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "200Mi"
+  fioArgs: >-
+    --rw=write --ioengine=sync --fdatasync=1
+    --directory=test-data --size=100m --bs=2300 --name=mytest
+
+  nodeSelector:
+    node-role.kubernetes.io/master: ""
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+  ttlSecondsAfterFinished: 180

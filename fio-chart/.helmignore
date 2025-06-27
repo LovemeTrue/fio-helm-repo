@@ -1,0 +1,10 @@
+README.md
+*.sh
+*.txt
+*.tgz
+*.tar
+*.log
+index.yaml
+Dockerfile
+.git
+.gitignore
