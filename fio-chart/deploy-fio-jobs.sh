@@ -3,8 +3,8 @@
 set -e
 
 # Define Helm chart info
-CHART_NAME="fio-chart"
-CHART_REPO="https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz/"
+CHART_NAME="fio-chart-0.1.0.tgz"
+CHART_REPO="https://lovemetrue.github.io/fio-helm-repo/"
 RELEASE_PREFIX="fio"
 NAMESPACE="default"
 
