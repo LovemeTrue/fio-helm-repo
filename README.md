@@ -39,7 +39,7 @@ fio-helm-repo/
 
 1. Download
 ```
-wget wget http://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-jobs.sh
+wget http://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-jobs.sh
 ```
 2. ## Change the mode
 ```
