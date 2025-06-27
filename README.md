@@ -35,7 +35,11 @@ fio-helm-repo/
 
 ## 🌍 Public / connected cluster usage
 
-### 1. 🛠️ To start using the Makefile wget it: wget http://lovemetrue.github.io/fio-helm-repo/makefile
+### 1. 🛠️ To start using the Makefile wget it:
+```wget http://lovemetrue.github.io/fio-helm-repo/makefile```
+
+### And run by typing this command:
+```
 make
 ```
 What it does:
