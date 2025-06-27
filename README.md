@@ -7,7 +7,7 @@ It is designed for both **open/public clusters** and **air-gapped / private envi
 
 ## 🚀 Features
 
-- Deploys a **Kubernetes Job per node** with `fio`
+- Deploys a **Kubernetes pod per node** with `fio`
 - Supports custom `fio` arguments
 - Runs automatically on **all nodes**
 - Compatible with **Helm Hooks** (`post-install`, `post-upgrade`)
@@ -17,6 +17,7 @@ It is designed for both **open/public clusters** and **air-gapped / private envi
 ---
 
 ## 📁 Directory structure
+```
 fio-helm-repo/
 ├── index.yaml                    # Helm repo index
 ├── fio-chart-0.1.0.tgz          # Helm chart package
@@ -28,7 +29,7 @@ fio-helm-repo/
 │   └── .helmignore
 ├── fio-results/                 # Benchmark logs (created by script)
 └── deploy-fio-jobs.sh           # Bash script to deploy jobs on all nodes
-
+```
 
 ---
 
