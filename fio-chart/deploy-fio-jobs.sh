@@ -13,7 +13,6 @@ mkdir -p "$LOG_DIR"
 echo "[INFO] Installing/upgrading DaemonSet..."
 helm upgrade --install "$RELEASE_NAME" "$CHART_REPO/$CHART_NAME" \
   --namespace "$NAMESPACE" \
-  --create-namespace
 
 echo "[INFO] Waiting for pods to be ready..."
 kubectl wait --for=condition=Ready pods -l app=fio-daemon -n "$NAMESPACE" --timeout=180s || true
