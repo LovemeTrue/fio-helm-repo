@@ -69,7 +69,7 @@ wget https://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-offline.sh
 (e.g. using USB, SCP, rsync, etc.)
 
 ```
-chmod +x deploy-fio-jobs.sh
+chmod +x deploy-fio-offline.sh
 ```
 
 ### 4. Run the sh script to analyze nodes with fio:
