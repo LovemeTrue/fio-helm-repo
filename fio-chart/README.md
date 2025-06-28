@@ -60,7 +60,7 @@ This guide will show you how to:
 	4.	Run the test and collect logs
 
 ```bash
-wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz && tar -xvf fio-chart-0.1.0.tgz
+wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz
 wget https://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-offline.sh
 ```
 
