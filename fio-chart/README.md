@@ -7,7 +7,7 @@ It is designed for both **open/public clusters** and **air-gapped / private envi
 
 ## 🚀 Features
 
-- Deploys a **Kubernetes Job per node** with `fio`
+- Deploys a **Kubernetes pod per node** with `fio`
 - Supports custom `fio` arguments
 - Runs automatically on **all nodes**
 - Compatible with **Helm Hooks** (`post-install`, `post-upgrade`)
@@ -35,35 +35,46 @@ fio-helm-repo/
 
 ## 🌍 Public / connected cluster usage
 
-### 1. Add the public Helm repository
+### 1. 🛠️ Get started with wgetting sh script:
 
-```bash
-helm repo add fio https://lovemetrue.github.io/fio-helm-repo
-helm repo update
+1. Download
 ```
-### 2. Run the deployment script
+wget http://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-jobs.sh
+```
+2. ## Change the mode
+```
+chmod -R 777 deploy-fio-jobs.sh
+```
+3. ### And run by typing this command:
 
 ```bash
-chmod +x deploy-fio-jobs.sh
 ./deploy-fio-jobs.sh
 ```
 
-## 🛡️ Private / Air-gapped cluster usage
+### 2. 🛡️ Running fio-chart in a Closed (Air-Gapped) Kubernetes Cluster
 
-### 1. Download chart manually (from a connected machine)
+This guide will show you how to:
+	1.	Download the required .tgz Helm chart and shell script
+	2.	Transfer them into the air-gapped environment
+	3.	Set permissions
+	4.	Run the test and collect logs
 
 ```bash
-wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz
+wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz && tar -xvf fio-chart-0.1.0.tgz
+wget https://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-offline.sh
 ```
 
-### 2. Transfer the file to your air-gapped cluster
+### 3. Transfer the file to your air-gapped cluster and change mode:
 
 (e.g. using USB, SCP, rsync, etc.)
 
-### 3. Install the chart from local .tgz file (per node)
+```
+chmod +x deploy-fio-offline.sh
+```
+
+### 4. Run the sh script to analyze nodes with fio:
 ```bash
-helm install fio-master ./fio-chart-0.1.0.tgz \
-  --set global.nodeSelector."kubernetes\.io/hostname"=master-node-name
+./deploy-fio-offline.sh
 ```
 
 ## 📬 Contact & License
