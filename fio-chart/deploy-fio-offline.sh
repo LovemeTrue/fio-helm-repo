@@ -48,7 +48,7 @@ for node in $nodes; do
 
   echo "[INFO] Waiting for pod $pod to complete fio..."
 
-  # Wait up to 1280 seconds for container to terminate
+  # Wait up to 180 seconds for container to terminate
   for i in {1..180}; do
     state=$(kubectl get pod "$pod" -n "$NAMESPACE" -o jsonpath="{.status.containerStatuses[0].state.terminated.reason}" 2>/dev/null || echo "")
     if [[ "$state" == "Completed" ]]; then
