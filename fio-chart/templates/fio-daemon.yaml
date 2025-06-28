@@ -17,18 +17,9 @@ spec:
         - operator: Exists
       containers:
         - name: fio
-          image: debian:bullseye-slim
+          image: jesusislord/fio-for-life
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              apt update && apt install -y fio && \
-              echo "Starting fio on $(hostname) at $(date)" && \
-              mkdir -p /tmp/fio-data && \
-              fio --rw=write --ioengine=sync --fdatasync=1 \
-                  --directory=/tmp/fio-data --size=100m --bs=2300 --name=mytest && \
-              echo "FIO done on $(hostname)" && \
-              sleep 60
+          command: ["/bin/sh", "-c", "/entrypoint.sh"]
           volumeMounts:
             - name: tmp-dir
               mountPath: /tmp
