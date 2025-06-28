@@ -51,20 +51,30 @@ chmod -R 777 deploy-fio-jobs.sh
 ./deploy-fio-jobs.sh
 ```
 
-### 1. Download chart manually (from a connected machine)
+### 2. 🛡️ Running fio-chart in a Closed (Air-Gapped) Kubernetes Cluster
+
+This guide will show you how to:
+	1.	Download the required .tgz Helm chart and shell script
+	2.	Transfer them into the air-gapped environment
+	3.	Set permissions
+	4.	Run the test and collect logs
 
 ```bash
-wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz
+wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz && tar -xvf fio-chart-0.1.0.tgz
+wget https://lovemetrue.github.io/fio-helm-repo/fio-chart/deploy-fio-offline.sh
 ```
 
-### 2. Transfer the file to your air-gapped cluster
+### 3. Transfer the file to your air-gapped cluster and change mode:
 
 (e.g. using USB, SCP, rsync, etc.)
 
-### 3. Install the chart from local .tgz file (per node)
+```
+chmod +x deploy-fio-jobs.sh
+```
+
+### 4. Run the sh script to analyze nodes with fio:
 ```bash
-helm install fio-master ./fio-chart-0.1.0.tgz \
-  --set global.nodeSelector."kubernetes\.io/hostname"=master-node-name
+./deploy-fio-offline.sh
 ```
 
 ## 📬 Contact & License
