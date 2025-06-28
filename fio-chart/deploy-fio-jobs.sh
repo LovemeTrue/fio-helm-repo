@@ -10,6 +10,8 @@ NAMESPACE="default"
 LOG_DIR="fio-results/daemon-logs"
 
 mkdir -p "$LOG_DIR"
+helm repo remove fio
+helm delete "$RELEASE_NAME"
 
 echo "[INFO] Adding Helm repository..."
 helm repo add "$CHART_REPO" "$REPO_URL"
