@@ -1,5 +1,5 @@
 global:
   image:
-    repository: jesusislord/fio-for-life
-    tag: latest
+    repository: debian
+    tag: bullseye-slim
     pullPolicy: IfNotPresent

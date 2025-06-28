@@ -17,9 +17,18 @@ spec:
         - operator: Exists
       containers:
         - name: fio
-          image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
-          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
-          command: ["/entrypoint.sh"]
+          image: debian:bullseye-slim
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apt update && apt install -y fio && \
+              echo "Starting fio on $(hostname) at $(date)" && \
+              mkdir -p /tmp/fio-data && \
+              fio --rw=write --ioengine=sync --fdatasync=1 \
+                  --directory=/tmp/fio-data --size=100m --bs=2300 --name=mytest && \
+              echo "FIO done on $(hostname)" && \
+              sleep 60
           volumeMounts:
             - name: tmp-dir
               mountPath: /tmp
