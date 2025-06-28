@@ -2,4 +2,4 @@ global:
   image:
     repository: jesusislord/fio-for-life
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
