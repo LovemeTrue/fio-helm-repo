@@ -10,8 +10,14 @@ NAMESPACE="default"
 LOG_DIR="fio-results/daemon-logs"
 
 mkdir -p "$LOG_DIR"
-helm repo remove fio
-helm delete "$RELEASE_NAME"
+if ! command -v helm &> /dev/null; then
+  echo "[ERROR] Helm is not installed. Please install Helm to proceed."
+  exit 1
+fi
+if ! command -v kubectl &> /dev/null; then
+  echo "[ERROR] kubectl is not installed. Please install kubectl to proceed."
+  exit 1
+fi
 
 echo "[INFO] Adding Helm repository..."
 helm repo add "$CHART_REPO" "$REPO_URL"
