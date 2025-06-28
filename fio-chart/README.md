@@ -53,11 +53,11 @@ chmod -R 777 deploy-fio-jobs.sh
 
 ### 2. 🛡️ Running fio-chart in a Closed (Air-Gapped) Kubernetes Cluster
 
-This guide will show you how to:
-	1.	Download the required .tgz Helm chart and shell script
-	2.	Transfer them into the air-gapped environment
-	3.	Set permissions
-	4.	Run the test and collect logs
+### This guide will show you how to:
+- Download the required .tgz Helm chart and shell script
+- Transfer them into the air-gapped environment
+- Set permissions
+- Run the test and collect logs
 
 ```bash
 wget https://lovemetrue.github.io/fio-helm-repo/fio-chart-0.1.0.tgz
