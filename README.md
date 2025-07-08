@@ -50,6 +50,7 @@ chmod -R 777 deploy-fio-jobs.sh
 ```bash
 ./deploy-fio-jobs.sh
 ```
+4. ### Important: Make sure that all nodes have permissions to create pods.
 
 ### 2. 🛡️ Running fio-chart in a Closed (Air-Gapped) Kubernetes Cluster
 
@@ -76,6 +77,8 @@ chmod +x deploy-fio-offline.sh
 ```bash
 ./deploy-fio-offline.sh
 ```
+5. ### Important: Make sure that all nodes have permissions to create pods.
+
 
 ## 📬 Contact & License
 
