@@ -77,7 +77,7 @@ chmod +x deploy-fio-offline.sh
 ```bash
 ./deploy-fio-offline.sh
 ```
-5. ### Important: Make sure that all nodes have permissions to create pods.
+### 5. Important: Make sure that all nodes have permissions to create pods.
 
 
 ## 📬 Contact & License
